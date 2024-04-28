@@ -1,16 +1,19 @@
+import java.time.Duration;
 import java.util.Date;
 
 public class BookReservation {
     BookItem bookItem;
     Member member;
     Date checkoutDate;
+    Duration numCheckoutDays;
     Date checkInDate;
     Fine fine;
 
-    public BookReservation(BookItem item,Member member,Date checkOutDate){
+    public BookReservation(BookItem item,Member member,Date checkOutDate, Duration duration){
         this.bookItem = item;
         this.member = member;
         this.checkoutDate = checkOutDate;
+        this.numCheckoutDays = duration;
     }
 
     public BookItem getBookItem() {
@@ -52,4 +55,13 @@ public class BookReservation {
     public void setFine(Fine fine) {
         this.fine = fine;
     }
+
+    public void calculateFine() {
+
+    }
+}
+
+class Fine{
+    private double fineAmount;
+    public double calculateFine(){return 0.0;}
 }
