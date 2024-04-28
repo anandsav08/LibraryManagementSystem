@@ -4,13 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 
 class LibraryConstants{
+    //I think these constants should be part of member class
     public static final int MEMBER_BOOK_CHECKOUT_LIMIT = 5;
     public static final int MEMBER_BOOK_CHECKOUT_DAYS_LIMIT = 10;
 }
+//Rack is good
 class Rack{
     private int floor;
     private int block;
 }
+//SubjectCategory is good.Think about String vs Enum ? Why you used Enum if String could have been used ?
 enum SubjectCategory{
     HORROR,
     FANTASY,
@@ -19,9 +22,12 @@ enum SubjectCategory{
 }
 
 enum BookItemStatus{
+    //Can have more Statuses
+    //Just write it out so you dont have to think in the interview.
     CHECKED_OUT,
     AVAILABLE,
 }
+//BookItem seems fine
 class BookItem{
     private Rack rack;
     private Book book;
@@ -29,12 +35,12 @@ class BookItem{
     private List<BookReservation> reservationHistory;
     private List<BookReservation> futureReservations;
     private BookReservation currentReservation;
-
+    //I was expecting a validation method which verifies if this bookItem can be reserved
     public void setCurrentReservation(BookReservation bookReservation){
         this.currentReservation = bookReservation;
         this.bookItemStatus = bookItemStatus.CHECKED_OUT;
     }
-
+    //When a Book is returned, the Fine might be calculated ? 
     public void checkInBookItem(Date checkInDate){
         currentReservation.setCheckInDate(checkInDate);
         reservationHistory.add(currentReservation);
@@ -49,8 +55,11 @@ class BookItem{
 }
 class Book{
     private String ISBN;
+    //A book can have multiple Authors
     private Author author;
     private String title;
+    //A book can have multiplt Categories
+    //Use List<SubjectCatergory> 
     private SubjectCategory subjectCategory;
     private Date publicationDate;
     List<BookItem> bookItems;
@@ -71,6 +80,8 @@ class PersonInfo{
 }
 
 class Author{
+    //Author's address wont be known. So, I think its better to use 
+    //author as string
     private PersonInfo personInfo;
 }
 
@@ -79,6 +90,7 @@ enum MemberStatus{
     INACTIVE
 }
 
+//This if fine if you want to support search for multiple fields
 class SearchParams{
     String title;
     Author author;
@@ -91,12 +103,14 @@ class SearchParams{
     public Date getPublicationDate(){return this.publicationDate;}
     public SubjectCategory getCategory(){return this.category;}
 }
+//You wont be requiring this enum.
 enum SearchType{
     AUTHOR,
     TITLE,
     CATEGORY,
     PUBLICATION_DATE
 }
+
 class Member{
     private PersonInfo personInfo;
     private MemberStatus memberStatus;
@@ -108,8 +122,16 @@ class Member{
 
     // methods
     // searchbook, checkout book, reserve book, register, unregister
+    //This shouldn't be here
+    //The Member Class is having an additional responsibility. 
+    //One Class should have one resposnsibility. There should be only 1 reason for a class to change.
+    //Make a decision if you want to support multiple fields.
+    //Case 1: Multiple Fields -> There should be only 1 function that matches
+    //Case 2: Only Single Fields -> You can use many functions.
+    //The following is a bad design :
     public List<Book> searchBook(SearchParams searchParams){
         SearchService searchService = null;
+        //Alternatively, switch(typeOf(searchParams))
         switch (searchParams.searchType){
             case AUTHOR:
                 searchService = new SearchByAuthor(searchParams.getAuthor());
@@ -164,6 +186,8 @@ class Account{
 
 class Librarian{
     private PersonInfo personInfo;
+    //This information is more suitable for all the employees
+    //SO, I think you should create another class which keeps track of details of the employees
     private Date dateOfJoining;
     private SalaryInfo salaryInfo;
     private Account account;
@@ -221,7 +245,8 @@ class LibraryManagementSystem{
     public void reserveBookItem(BookItem bookItem, Date startDate, Duration numDays) {
 
     }
-
+    // A better option would be to have a function to sendNotification() inside a member class.
+    //
     public void checkAndSendDueDateNotification(){
         List<BookReservation> dueDateOverReservations = reservationService.getReservationsWithBookDueDateOver();
         dueDateOverReservations.stream()
@@ -230,6 +255,7 @@ class LibraryManagementSystem{
                 });
     }
 }
+//This is a better implementation of search: 
 interface SearchService{
     List<Book> search(BookCatalog bookCatalog);
 }
@@ -263,13 +289,15 @@ class SearchByCategory implements SearchService{
 }
 
 interface NotificationService{
+    //You're sending notification to a member, How will you determine regarding which reservation it is associated with
+    //How about void notify(BookReservation bookReservation) ? 
     void notify(Member member);
 }
 
 class EmailNotificationService implements NotificationService{
     @Override
     public void notify(Member member){
-
+        //Just fetch the EmailDetails of the member and send the Email
     }
 }
 
@@ -304,6 +332,8 @@ enum CardType{
 }
 
 class Card{
+    //WHy 2 details are required ? 
+    //Try to associate the Fees related to either member or a bookReservation
     CardDetails cardDetails;
     CardType cardType;
 }
