@@ -26,6 +26,7 @@ enum BookItemStatus{
     //Just write it out so you dont have to think in the interview.
     CHECKED_OUT,
     AVAILABLE,
+    LOST,
 }
 //BookItem seems fine
 class BookItem{
