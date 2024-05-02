@@ -2,7 +2,15 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+/*
 
+Any library member should be able to search books by their title, author, subject category as well by the publication date.
+Library members should be able to check-out and reserve any copy.
+The system should be able to retrieve information like who took a particular book or what are the books checked-out by a specific library member.
+The system should be able to collect fines for books returned after the due date.
+Members should be able to reserve books that are not currently available.
+The system should be able to send notifications whenever the reserved books become available, as well as when the book is not returned within the due date
+*/
 class LibraryConstants{
     //I think these constants should be part of member class
     public static final int MEMBER_BOOK_CHECKOUT_LIMIT = 5;
@@ -92,18 +100,36 @@ enum MemberStatus{
 }
 
 //This if fine if you want to support search for multiple fields
-class SearchParams{
+//THIS IS RESPONSIBLE JUST FOR CREATING PARAMS NOT FOR SEARCH: 
+class SearchParams implements ISearchParams{
     String title;
     Author author;
     Date publicationDate;
     SubjectCategory category;
     SearchType searchType;
-
-    public Author getAuthor(){return this.author;}
-    public String getTitle(){return this.title;}
-    public Date getPublicationDate(){return this.publicationDate;}
-    public SubjectCategory getCategory(){return this.category;}
+    String fifthParam;
+    
+    List<Book> listOfBooks;    
 }
+
+interface ISearchParams{
+    public String getAuthor();
+    public Date getPublicationDate();
+    public SubjectCategory getSubjectCategory();
+    public String getTitle();
+    public String getFifthParam();
+}
+
+interface ISearchService{
+    List<Book> searchBooks(BookCatalog bookCatalog, ISearchParams searchParams);
+}
+
+class DefaultSearchService implements ISearchService{
+    List<Book> searchBooks(BookCatalog bookCatalog, SearchParams searchParams){
+        return new LinkedList<>();
+    }
+}
+
 //You wont be requiring this enum.
 enum SearchType{
     AUTHOR,
@@ -185,15 +211,18 @@ class Account{
 
 }
 
-class Librarian{
+abstract class Employee{
+// All common Fields should go here:
     private PersonInfo personInfo;
     //This information is more suitable for all the employees
     //SO, I think you should create another class which keeps track of details of the employees
     private Date dateOfJoining;
     private SalaryInfo salaryInfo;
     private Account account;
-    private LibraryManagementSystem managementSystem;
+}
 
+class Librarian extends Employee{
+    private LibraryManagementSystem managementSystem;
     public void setLibraryManagementSystem(LibraryManagementSystem managementSystem){this.managementSystem = managementSystem;}
     public void addBook(Book book){}
     public void addBookItem(BookItem bookItem){}
@@ -202,20 +231,14 @@ class Librarian{
 class LibraryCard{
     private long barcode;
     Member member;
-
     public Member getMember(){return this.member;}
 }
 
-// Management classes:
-class Worker{
-    // cron job
-    public void
-}
 class LibraryManagementSystem{
     private MemberCatalog memberCatalog;
     private BookCatalog bookCatalog;
-    private List<Librarian> librarians;
-    private SearchService searchService;
+    private List<Employee> librarians;
+    private ISearchService searchService;
     private NotificationService notificationService;
     private ReservationService reservationService;
     private PaymentService paymentService;
@@ -231,8 +254,8 @@ class LibraryManagementSystem{
         memberCatalog.removeMember(member);
     }
 
-    public List<Book> searchBook(SearchService searchService){
-        return searchService.search(bookCatalog);
+    public List<Book> searchBook(SearchParams searchParams){
+        return ISearchService.search(bookCatalog, searchParams);
     }
 
     public BookReservation checkoutBookItem(Member member, BookItem bookItem,Duration duration) {
@@ -349,14 +372,12 @@ class CardPaymentService implements PaymentService{
 
 class MemberCatalog{
     private List<Member> members;
-
     public boolean addMember(Member member){members.add(member); return true;}
     public void removeMember(Member member){member.setMemberStatus(MemberStatus.INACTIVE);}
 }
 
 class BookCatalog{
     private List<Book> books;
-
     public void addBook(Book book){books.add(book);}
     public void removeBook(Book book){}
 }
