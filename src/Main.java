@@ -3,11 +3,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 /*
-The system should be able to retrieve information like who took a particular book or what are the books checked-out by a specific library member.
-The system should be able to collect fines for books returned after the due date.
-Members should be able to reserve books that are not currently available.
-The system should be able to send notifications whenever the reserved books become available, as well as when the book is not returned within the due date
+    The system should be able to collect fines for books returned after the due date.
+     The system should be able to send notifications whenever the reserved books become available, as well as when the book is not returned within the due date
 */
+
 class LibraryConstants{
     //I think these constants should be part of member class
     public static final int MEMBER_BOOK_CHECKOUT_LIMIT = 5;
@@ -143,7 +142,6 @@ class Member{
     private List<BookReservation> bookReservationsHistory;
     private List<BookReservation> currentCheckedoutBookReservations;
     private List<BookReservation> futureBookReservations;
-
     // methods
     // searchbook, checkout book, reserve book, register, unregister
     //This shouldn't be here
@@ -318,6 +316,17 @@ class SMSNotificationService implements NotificationService{
     public void notify(Member member){
 
     }
+}
+
+
+class BookReservation {
+    BookItem bookItem;
+    Member member;
+    Date checkoutDate;
+    Duration numCheckoutDays;
+    Date checkInDate;
+    Fine fine;
+    BookReservationstatus bookReservationStatus;
 }
 
 class CardDetails{
