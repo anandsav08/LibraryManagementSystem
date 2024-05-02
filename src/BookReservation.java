@@ -68,9 +68,4 @@ public class BookReservation {
     }
 }
 
-class Fine{
-    private double fineAmount;
-    //I think its better to have an interface that calculates the Fines : 
-    public double calculateFine(BookReservation bookReservation) {return 0.0};
-    public double calculateFine(){return 0.0;}
-}
+
