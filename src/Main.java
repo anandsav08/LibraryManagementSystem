@@ -3,9 +3,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 /*
-
-Any library member should be able to search books by their title, author, subject category as well by the publication date.
-Library members should be able to check-out and reserve any copy.
 The system should be able to retrieve information like who took a particular book or what are the books checked-out by a specific library member.
 The system should be able to collect fines for books returned after the due date.
 Members should be able to reserve books that are not currently available.
@@ -244,20 +241,11 @@ class LibraryManagementSystem{
     private PaymentService paymentService;
     private Worker pollingLoop;
 
-    public void addLibrarian(Librarian librarian){}
-
-    public boolean registerMember(Member member) {
-        memberCatalog.addMember(member);
-        return true;
-    }
-    public boolean unregisterMember(Member member){
-        memberCatalog.removeMember(member);
-    }
-
     public List<Book> searchBook(SearchParams searchParams){
         return ISearchService.search(bookCatalog, searchParams);
     }
 
+    //
     public BookReservation checkoutBookItem(Member member, BookItem bookItem,Duration duration) {
         return reservationService.checkoutBookItem(member,bookItem,duration);
     }
@@ -387,11 +375,18 @@ class ReservationService{
 
     public BookReservation checkoutBookItem(Member member, BookItem bookItem, Duration duration) {
         if(!member.canCheckOutBook() || duration.toDays() > 10) {
-            // throw exception
+            // throw exception: Excpetion details should be very clear: Format and DEtails should be clear
         }
+        //Similar check should be there for BookItem
+        //This function should be a part of bookItem class
+        if(!bookItem.canBeReserved(new Date(), duration)){
+            //Error Throw -> 
+        }
+        //Extra checking if required that requires both the fields : (bookItem & Member)
+        
         BookReservation bookReservation = new BookReservation(bookItem,member,new Date(),duration);
-        bookItem.setCurrentReservation(bookReservation);
-        bookItem.setBookItemStatus(BookItemStatus.CHECKED_OUT);
+        //member.checkOut(bookReservation) -> It will set all the fields related to the member class and this bookReservation
+        //bookItem.checkOut(bookReservation) -> It will set all the fields related to the BookItem class
         currentBookReservations.add(bookReservation);
         return bookReservation;
     }
